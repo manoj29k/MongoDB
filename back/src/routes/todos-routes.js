@@ -36,6 +36,22 @@ todosRoute.get("/:id", async (req, res) =>{
 //     return res.json({ todo: addedTodolist });
 //   });
 
+todosRoute.post('/', async(req, res) => {
+    const title  = req.body;
+    console.log(title)
+    if (!title) {
+      return res.status(400).json({ error: 'Le titre est obligatoire.' });
+    }
+    const newTodoList = new TodoModel({
+        title: title,
+        createdAt: new Date()
+    })
+
+    const todolistAouter = await newTodoList.save()
+
+    return res.json({todo: todolistAouter})
+  });
+
 
 
 
@@ -79,5 +95,57 @@ todosRoute.delete("/:id",async (req, res)=>{
 
 
 
+todosRoute.post('/:id/todo',async (req, res)=> {
+    const todoListID = req.params.id;
+    const todoTitle = req.body.title
+    const todoList = await todoModel.findById(todoListID);
+    if (!todoList){
+        return res.status(404).json({error: "todolist introuable"})
+    }
+    todoList.todos.push({title: todoTitle})
+    await todoList.save()
+    return res.json(todoList)
+})
 
 
+todosRoute.get('/:listId / :todoId' ,async (req, res)=> {
+    const {listId , todoId} = req.params
+    const {title , isDone} = req.params
+    
+    const todoList = await todoModel.findById(listId);
+    
+    if (!todoList){
+        return res.status(404).json({error: "todolist introuable"})
+    }
+
+    const todo = todoList.todo.id(todoId)
+    todo.set({
+        title: title ? title: todo.title,
+        isDone: isDone ? isDone : todo.isDone
+    })
+    await todoList.save()
+    return res.json({message: "todo modifié"})
+    
+})
+
+
+
+todosRoute.delete('/:listId / :todoId' ,async (req, res)=> {
+    const {listId , todoId} = req.params
+
+    const todoList = await todoModel.findById(listId);
+    
+    if (!todoList){
+        return res.status(404).json({error: "todolist introuable"})
+    }
+
+    const todo = todoList.todo.id(todoId)
+// ENleve la tache
+
+    todoList.todo.pull(todo)
+
+
+    await todoList.save()
+    return res.json({message: "todo modifié"})
+    
+})
