@@ -1,4 +1,4 @@
-// Définir un schéma 
+// Définir un schema 
 
 import mongoose from "mongoose"
 
@@ -15,4 +15,4 @@ const TodoListSchema = mongoose.Schema({
 
 // Exporté le model pour étre utilisé allieurs
 
-export const TodoModel = mongoose.model("todolist", TodoListSchema)
+export const todoModel = mongoose.model("todolist", TodoListSchema)
